@@ -2,12 +2,12 @@ all :
 	make -C gtk/
 	make -C src/
 	make -C obj/
-	make -C test/
+	make -C tst/
 
 PHONY : clean
 
 clean :
-	rm obj/*.o obj/*.x *.x
+	rm obj/*.?
 
-ls :
-	echo $(EXE)
+test :
+	make -C tst/ test
