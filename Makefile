@@ -2,6 +2,7 @@ all :
 	make -C gtk/
 	make -C src/
 	make -C obj/
+	make -C test/
 
 PHONY : clean
 
