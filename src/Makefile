@@ -1,5 +1,5 @@
 CFLAG = -g -c -std=c++14 -fmax-errors=1
-INCLUDE = -I../
+INCLUDE = -I../ -I/usr/include/compute -I/usr/include/opencv
 CC = g++
 OBJ = $(patsubst %.cc, ../obj/%.o, $(wildcard *.cc))
 MAIN_OBJ = $(patsubst %.cpp, ../obj/%.x, $(wildcard *.cpp))
