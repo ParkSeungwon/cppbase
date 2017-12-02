@@ -70,7 +70,7 @@ CLMat CLMat::operator*(CLMat& r)
 	repeat(r.width); r.repeat(height);
 	mode(LEFT); r.mode(RIGHT);
 	if(sync_ == CPU) cpu2gpu(); if(r.sync_ == CPU) r.cpu2gpu();
-	CLMat rt{height, r.width};
+
 	int sz = v_.size();
 	compute::vector<float> v(sz), key(sz / width), value(sz / width);
 	compute::transform(v_.begin(), v_.end(),
@@ -80,6 +80,7 @@ CLMat CLMat::operator*(CLMat& r)
 			compute::make_transform_iterator(compute::make_counting_iterator<int>(sz), compute::lambda::_1 / width),
 			v.begin(), key.begin(), value.begin()
 	);
+	CLMat rt{height, r.width};
 	compute::copy_n(value.begin(), height * r.width, rt.v_.begin());
 	rt.mode_ = LEFT;
 	rt.sync_ = GPU;
@@ -121,12 +122,9 @@ bool CLMat::mode(Mode m)
 void CLMat::cpu2gpu()
 {
 	if(mode_ == LEFT) {
-		*this = transpose();
-		cout << "HH"; show();
+		auto m = transpose();
 		for(int j=0; j<height; j++) for(int i=0; i<repeat_; i++) 
-			compute::copy_n(data() + width * j, width, v_.begin()+width*(height*i+j));
-		cout << "H2"; show();
-		*this = transpose();
+			compute::copy_n(m.data() + width*j, width, v_.begin()+width*(height*i+j));
 	} else {
 		compute::copy_n(data(), width * height, v_.begin());
 		for(int i=1; i<repeat_; i++)
