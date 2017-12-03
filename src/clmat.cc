@@ -37,19 +37,15 @@ CLMat::CLMat(const CLMat& r) : CLMat{static_cast<Matrix<float>>(r)}
 	v_ = r.v_;
 }	
 
-CLMat CLMat::operator=(const CLMat& r)
+CLMat CLMat::operator=(CLMat&& r)
 {
-	if(width * height != r.width * r.height) {
-		delete [] arr;
-		arr = new float[width * height];
-	}
+	if(arr) delete [] arr;
+	arr = r.arr;
+	v_ = move(r.v_);
 	width = r.width; height = r.height;
 	mode_ = r.mode_;
 	sync_ = r.sync_;
 	repeat_ = r.repeat_;
-	v_.resize(r.v_.size());
-	if(r.sync_ == CPU) this->Matrix<float>::operator=(static_cast<Matrix<float>>(r));
-	else v_ = r.v_, sync_ = GPU;
 	return *this;
 }
 
@@ -80,8 +76,13 @@ CLMat CLMat::operator*(CLMat& r)
 			compute::make_transform_iterator(compute::make_counting_iterator<int>(sz), compute::lambda::_1 / width),
 			v.begin(), key.begin(), value.begin()
 	);
+	compute::copy(key.begin(), key.end(), ostream_iterator<float>(cout, ", "));
+	cout << endl;
+	compute::copy(value.begin(), value.end(), ostream_iterator<float>(cout, ", "));
+	cout << endl;
 	CLMat rt{height, r.width};
-	compute::copy_n(value.begin(), height * r.width, rt.v_.begin());
+	rt.repeat(1);
+	compute::copy(value.begin(), value.end(), rt.v_.begin());
 	rt.mode_ = LEFT;
 	rt.sync_ = GPU;
 	return move(rt);
@@ -123,12 +124,12 @@ void CLMat::cpu2gpu()
 {
 	if(mode_ == LEFT) {
 		auto m = transpose();
-		for(int j=0; j<height; j++) for(int i=0; i<repeat_; i++) 
-			compute::copy_n(m.data() + width*j, width, v_.begin()+width*(height*i+j));
+		for(int j=0, k=0; j<height; j++) for(int i=0; i<repeat_; i++, k++) 
+			compute::copy_n(m.data() + width * j, width, v_.begin() + width * k);
 	} else {
 		compute::copy_n(data(), width * height, v_.begin());
 		for(int i=1; i<repeat_; i++)
-			compute::copy_n(v_.begin(), width * height, v_.begin() + i*width*height);
+			compute::copy_n(v_.begin(), width*height, v_.begin() + i*width*height);
 	}
 	sync_ = SYNC;
 }
@@ -136,8 +137,12 @@ void CLMat::cpu2gpu()
 void CLMat::gpu2cpu()
 {//becaust Matrix is column major
 	if(mode_ == RIGHT) compute::copy_n(v_.begin(), width * height, data());
-	else for(int i=0; i<height; i++) 
-		compute::copy_n(v_.begin(), width, data() + i * width * repeat_);
+	else for(int i=0; i<height; i++) {
+		compute::copy_n(v_.begin() + i*width*repeat_, width, data() + i*width);
+		swap(width, height);
+		Matrix<float>::operator=(transpose());
+		for(int i=0; i<width*height; i++) cout <<arr[i] << ' ';
+	}
 	sync_ = SYNC;
 }
 

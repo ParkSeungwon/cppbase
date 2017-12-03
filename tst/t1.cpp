@@ -13,7 +13,7 @@ class Test : public CLMat
 int main()
 {
 	try{
-	CLMat m{{ {3.1,4,5},{2,3,1} }};
+	CLMat m{{ {3.1,4,5},{2,3,4} }};
 	m.show();
 	CLMat n{{ {3, 1},{2, 2},{1, 5} }};
 	n.show();

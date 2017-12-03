@@ -8,7 +8,7 @@
 class CLMat : public Matrix<float>
 {// m*m impossible
 	enum Mode {LEFT, RIGHT} mode_ = LEFT;
-	enum Sync {CPU = -1, SYNC, GPU} sync_ = CPU;
+	enum Sync {CPU = -1, SYNC, GPU} sync_ = CPU;//which part has the valid info
 	friend std::ostream& operator<<(std::ostream& o, CLMat& r);
 
 public:
@@ -16,7 +16,7 @@ public:
 	CLMat(Matrix<float> r);
 	CLMat(CLMat&& r);
 	CLMat(const CLMat& r);
-	CLMat operator=(const CLMat& r);
+	CLMat operator=(CLMat&& r);
 	float* operator[](int x);
 	float* operator[](int x) const;
 	CLMat operator*(CLMat& r);
