@@ -14,13 +14,14 @@ int main()
 {
 	try{
 	CLMat m{{ {3.1,4,5},{2,3,4} }};
-	m.show();
+//	m.show();
 	CLMat n{{ {3, 1},{2, 2},{1, 5} }};
-	n.show();
+//	n.show();
 	auto m2 = m * n;
-	m.show();n.show();
+//	m.show();n.show();
+//	m2.show();
 	cout << m << n << m2 << endl;
-	cout << m << endl;
+//	cout << m << endl;
 	} catch(const char* e) {cout << e << endl;}
 }
 

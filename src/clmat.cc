@@ -97,16 +97,32 @@ void CLMat::sync()
 bool CLMat::repeat(int n)
 {//repeat 
 	if(n == repeat_) return false;
-	v_.resize(width * height * n);
-	if(sync_ != CPU) for(int i=0; i<n-repeat_; i++)//gpu copy, if cpu lazy 
-		compute::copy_n(v_.begin(), width * height, 
+	if(sync_ == CPU) v_.resize(width * height * n);
+	else {//12123434 -> 121212343434
+		if(mode_ == RIGHT) {
+			v_.resize(width * height * n);
+			for(int i=0; i<n-repeat_; i++)//gpu copy, if cpu lazy 
+				compute::copy_n(v_.begin(), width * height, 
 						v_.begin() + width * height * (repeat_ + i));
+		} else {
+			compute::vector<float> v(n * width * height);
+			for(int i=0; i<height; i++) for(int j=0; j<n; j++) 
+				compute::copy_n(v_.begin() + i * repeat_ * width, width,
+						v.begin() + (i * n + j) * width);
+			v_ = move(v);
+		}
+	}
 	repeat_ = n;
 	return true;
 }
 
 void CLMat::show()
 {
+	cout << "width " << width << ", height " << height << endl;
+	cout << "mode : " << (mode_ == LEFT ? "left" : "right") << endl;
+	cout << "sync : " << (sync_ == CPU ? "CPU" : "GPU||SYN") << endl;
+	cout << "repeat : " << repeat_ << endl;
+	cout << static_cast<Matrix<float>>(*this);
 	compute::copy(v_.begin(), v_.end(), ostream_iterator<float>(cout, ", "));
 	cout << endl;
 }
@@ -137,11 +153,13 @@ void CLMat::cpu2gpu()
 void CLMat::gpu2cpu()
 {//becaust Matrix is column major
 	if(mode_ == RIGHT) compute::copy_n(v_.begin(), width * height, data());
-	else for(int i=0; i<height; i++) {
-		compute::copy_n(v_.begin() + i*width*repeat_, width, data() + i*width);
+	else {
+		for(int i=0; i<height; i++) 
+			compute::copy_n(v_.begin() + i*width*repeat_, width, data() + i*width);
 		swap(width, height);
+//		for(int i=0; i<width*height; i++) cout << arr[i] << ' ';
 		Matrix<float>::operator=(transpose());
-		for(int i=0; i<width*height; i++) cout <<arr[i] << ' ';
+//		for(int i=0; i<width*height; i++) cout << arr[i] << ' ';
 	}
 	sync_ = SYNC;
 }
