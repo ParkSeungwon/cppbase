@@ -1,10 +1,12 @@
-CFLAG = -g -c -std=c++14 -fmax-errors=1 -pthread
-INCLUDE = -I../ -I../src/ -I/usr/include/opencv -I/usr/include/compute
+CFLAG = -g -c -std=c++17 -fmax-errors=1
+INCLUDE = -I../ 
 CC = g++
-OBJ = $(wildcard ../obj/*.o)
-MAIN_OBJ = $(patsubst %.cpp, ../obj/%.t, $(wildcard *.cpp))
+OBJ = $(patsubst %.cc, ../obj/%.t, $(wildcard *.cc))
 
-all : $(MAIN_OBJ)
+all : ../obj/catch.tx $(OBJ)
 
 ../obj/%.t : %.cpp
+	$(CC) $(INCLUDE) $(CFLAG) $< -o $@
+
+../obj/catch.tx : catch.cpp
 	$(CC) $(INCLUDE) $(CFLAG) $< -o $@

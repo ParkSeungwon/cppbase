@@ -1,14 +1,14 @@
 CC = g++
 OBJ = $(wildcard *.o)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
-TST = $(patsubst %.t, ../%.x, $(wildcard *.t))
+TST = $(wildcard %.t)
+LIBS = 
 
-all : $(EXE)
-test : $(TST)
+all : $(EXE) ../catch.x
 
 ../%.x : %.x $(OBJ)
-	$(CC) -o $@ $< $(OBJ) -lzezeon -lOpenCL $(gtkmmLIB)
+	$(CC) -o $@ $< $(OBJ) $(LIBS)
 
-../%.x : %.t $(OBJ)
-	$(CC) -o $@ $< $(OBJ) -lzezeon -lOpenCL $(gtkmmLIB)
+../catch.x : catch.tx $(OBJ) $(TST)
+	$(CC) -o $@ $< $(OBJ) $(TST)  $(LIBS)
 
