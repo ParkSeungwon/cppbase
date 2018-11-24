@@ -1,25 +1,13 @@
-#include<iomanip>
-#include<sstream>
 #include<istream>
 #include<vector>
 #include<fstream>
 #include<json/json.h>
-#include<gmpxx.h>
+#include<iostream>
+#include"mpz.h"
 #include"ber.h"
 using namespace std;
 
 vector<unsigned char> base64_decode(string s);
-template<typename It> void mpz2bnd(mpz_class n, It begin, It end)
-{//mpz to big endian
-	for(It i=end; i!=begin; n /= 0x100) *--i = mpz_class{n % 0x100}.get_ui();
-}
-template<typename It> mpz_class bnd2mpz(It begin, It end)
-{//big endian to mpz
-	std::stringstream ss; ss << "0x";
-	for(It i=begin; i!=end; i++)
-		ss << std::hex << std::setfill('0') << std::setw(2) << +*i;
-	return mpz_class{ss.str()};
-}
 string get_certificate_core(istream& is) {//if certificate has no -----END hang..
 	string s, r;
 	while(s != "-----BEGIN") if(!(is >> s)) return r;//no more certificate
@@ -129,7 +117,7 @@ string dertojson(string filename)
 {
 	ifstream f(filename);
 	stringstream ss;
-	ss << der2json(filename);
+	ss << der2json(f);
 	return ss.str();
 }
 string pemtojson(string filename)
@@ -138,4 +126,10 @@ string pemtojson(string filename)
 	stringstream ss;
 	ss << pem2json(f);
 	return ss.str();
+}
+
+void print(int n)
+{
+	mpz_class z = n;
+	cout << n << endl;
 }
