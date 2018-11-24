@@ -1,14 +1,17 @@
 CC = g++
 OBJ = $(wildcard *.o)
+TOBJ = $(wildcard *.t)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
-TST = $(patsubst %.t, ../%.x, $(wildcard *.t))
+gtkmmLIB = $(shell pkg-config gtkmm-3.0 --libs)
+LIBS = -lpthread -lboost_python -ljsoncpp -lgmpxx -lgmp
 
-all : $(EXE)
-test : $(TST)
+all : $(EXE) ../catch.x ../tls_crypt.so
 
 ../%.x : %.x $(OBJ)
-	$(CC) -o $@ $< $(OBJ) -lzezeon -lOpenCL $(gtkmmLIB)
+	$(CC) -o $@ $< $(OBJ) $(LIBS)
 
-../%.x : %.t $(OBJ)
-	$(CC) -o $@ $< $(OBJ) -lzezeon -lOpenCL $(gtkmmLIB)
+../tls_crypt.so : $(OBJ)
+	$(CC) -shared -o $@ $(OBJ) $(LIBS) 
 
+../catch.x : catch.tx $(TOBJ)
+	$(CC) -o $@ $< $(TOBJ) $(LIBS)
