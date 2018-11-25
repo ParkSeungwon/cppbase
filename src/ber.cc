@@ -127,9 +127,3 @@ string pemtojson(string filename)
 	ss << pem2json(f);
 	return ss.str();
 }
-
-void print(int n)
-{
-	mpz_class z = n;
-	cout << n << endl;
-}

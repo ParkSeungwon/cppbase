@@ -2,9 +2,17 @@
 #include"aes.h"
 using namespace std;
 
+AES::AES(unsigned short key_size) : key_size_{key_size / 8}
+{ }
+
 void AES::key(const mpz_class key)
 {
 	mpz2bnd(key, key_, key_+ key_size_);
+}
+
+void AES::key2(string k)
+{
+	key(mpz_class{k});
 }
 
 void AES::iv(const mpz_class iv)
@@ -12,22 +20,30 @@ void AES::iv(const mpz_class iv)
 	mpz2bnd(iv, iv_, iv_+16);
 }
 
-void AES2::key(int k)
+void AES::iv2(string i)
 {
-	mpz_class k_ = k;
-	AES::key(k_);
+	iv(mpz_class{i});
+}
+string AES::show()
+{
+	stringstream ss;
+	ss << "key : 0x";
+	for(int k : key_) ss << hex << k;
+	ss << "\niv : 0x";
+	for(int k : iv_) ss << hex << k;
+	return ss.str();
 }
 
-void AES2::iv(int i)
+vector<unsigned char> l2v(boost::python::list l);
+boost::python::list v2l(vector<unsigned char> v);
+boost::python::list AES::encrypt2(boost::python::list msg)
 {
-	mpz_class i_ = i;
-	AES::iv(i_);
+	auto v = l2v(msg);
+	return v2l(encrypt(v.begin(), v.end()));
 }
 
-void AES2::show()
+boost::python::list AES::decrypt2(boost::python::list enc)
 {
-	cout << "key : 0x";
-	for(int k : key_) cout << hex << k;
-	cout << "iv : 0x";
-	for(int k : iv_) cout << hex << k;
+	auto v = l2v(enc);
+	return v2l(decrypt(v.begin(), v.end()));
 }
