@@ -1,3 +1,4 @@
+#include<deque>
 #include<iostream>
 #include"aes.h"
 using namespace std;
@@ -15,9 +16,12 @@ bp::long_ mpz2long(mpz_class z)
 
 mpz_class long2mpz(bp::long_ l) {
 	mpz_class r = 0;
-	for(const unsigned i = 0x10000000; l; l /= i) {
+	deque<unsigned> q;
+	const unsigned i = 0x10000000;
+	for(; l; l /= i) q.push_front(bp::extract<unsigned>(l % i));
+	for(unsigned k : q) {
 		r *= i;
-		r += bp::extract<unsigned>(l % i);
+		r += k;
 	}
 	return r;
 }
