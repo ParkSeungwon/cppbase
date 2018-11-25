@@ -5,12 +5,15 @@
 #include<boost/python.hpp>
 #include"mpz.h"
 
+boost::python::long_ mpz2long(mpz_class z);
+mpz_class long2mpz(boost::python::long_ l);
+
 class AES
 {
 public:
 	AES(unsigned short bit = 128);
-	void key2(std::string key);
-	void iv2(std::string iv);
+	void key2(boost::python::long_ key);
+	void iv2(boost::python::long_ iv);
 	void key(const mpz_class key);
 	void iv(const mpz_class iv);
 	boost::python::list encrypt2(boost::python::list msg);
