@@ -1,23 +1,26 @@
 #include<deque>
-#include<iostream>
 #include"aes.h"
 using namespace std;
 namespace bp = boost::python;
 
-bp::long_ mpz2long(mpz_class z)
+bp::long_ mpz2long(mpz_class l)
 {
 	bp::long_ r; 
-	for(const unsigned i = 0xffffffff; z; z /= i) {
+	deque<unsigned> q;
+	const unsigned i = 1 << 31;
+	for(; l; l /= i) q.push_front(mpz_class{l % i}.get_ui());
+	for(unsigned k : q) {
 		r *= i;
-		r += z % i;
+		r += k;
 	}
 	return r;
 }
 
-mpz_class long2mpz(bp::long_ l) {
+mpz_class long2mpz(bp::long_ l) 
+{
 	mpz_class r = 0;
 	deque<unsigned> q;
-	const unsigned i = 0x10000000;
+	const unsigned i = 1 << 31;
 	for(; l; l /= i) q.push_front(bp::extract<unsigned>(l % i));
 	for(unsigned k : q) {
 		r *= i;
