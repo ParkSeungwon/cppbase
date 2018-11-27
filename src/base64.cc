@@ -1,6 +1,5 @@
 #include<string>
 #include<vector>
-#include<boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include<boost/python.hpp>
 using namespace boost::python;
 using namespace std;
