@@ -86,9 +86,9 @@ pb::int_ DiffieHellman::get_yb() { return pb::str(yb.get_str()); }
 
 pb::int_ DiffieHellman::set_yb(pb::int_ pub_key)
 {//set client pub key
-	yb = Mpz{pub_key};
+	yb = mpz_class{pb::str(pub_key)};
 	K = powm(yb, xa, p);
-	return Mpz{K};
+	return K.get_str();
 }
 
 RSA::RSA(int key_size)
@@ -110,10 +110,10 @@ RSA::RSA(Mpz e, Mpz d, Mpz K)
 
 pb::int_ RSA::encode(pb::int_ m)
 {//K should be bigger than m
-	return Mpz{powm(Mpz{m}, e, K)};
+	return powm(mpz_class{pb::str(m)}, e, K).get_str();
 }
 pb::int_ RSA::decode(pb::int_ m)
 {
-	return Mpz{powm(Mpz{m}, d, K)};
+	return powm(mpz_class{pb::str(m)}, d, K).get_str();
 }
 
