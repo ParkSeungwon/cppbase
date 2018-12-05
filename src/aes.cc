@@ -65,11 +65,27 @@ DiffieHellman::DiffieHellman(mpz_class p, mpz_class g, mpz_class ya)
 	yb = powm(g, xb, p);
 	K = powm(ya, xb, p);
 }
+DiffieHellman::DiffieHellman(pb::int_ p, pb::int_ g, pb::int_ ya) :
+	DiffieHellman(mpz_class{pb::str(p)}, mpz_class{pb::str(g)}, mpz_class{pb::str(ya)})
+{ }
+
+pb::int_ DiffieHellman::get_p() { return pb::str(p.get_str()); }
+pb::int_ DiffieHellman::get_g() { return pb::str(g.get_str()); }
+pb::int_ DiffieHellman::get_K() { return pb::str(K.get_str()); }
+pb::int_ DiffieHellman::get_ya() { return pb::str(ya.get_str()); }
+pb::int_ DiffieHellman::get_yb() { return pb::str(yb.get_str()); }
+
 mpz_class DiffieHellman::set_yb(mpz_class pub_key)
 {//set client pub key
 	yb = pub_key;
 	K = powm(yb, xa, p);
 	return K;
+}
+
+pb::int_ DiffieHellman::set_yb2(pb::int_ pub_key)
+{
+	set_yb(mpz_class{pb::str(pub_key)});
+	return get_yb();
 }
 
 RSA::RSA(int key_size)

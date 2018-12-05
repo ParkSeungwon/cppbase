@@ -47,4 +47,19 @@ PYBIND11_MODULE(tls_crypt, m) {
 		.def("secret", &PRF<SHA2>::secret2)
 		.def("get_n_byte", &PRF<SHA2>::get_n_byte)
 		;
+	class_<DiffieHellman>(m, "DiffieHellman")
+		.def(init<int>(), "bit"_a = 1024)
+		//.def(init<mpz_class, mpz_class, mpz_class>())
+		.def(init<int_, int_, int_>())
+		.def("set_yb", &DiffieHellman::set_yb2)
+		.def_property_readonly("K", &DiffieHellman::get_K)
+		.def_property_readonly("p", &DiffieHellman::get_p)
+		.def_property_readonly("g", &DiffieHellman::get_g)
+		.def_property_readonly("ya", &DiffieHellman::get_ya)
+		.def_property_readonly("yb", &DiffieHellman::get_yb)
+		;
+	class_<RSA>(m, "RSA")
+		.def(init<int>(), "key_size"_a = 1024)
+		.def(init<int_, int_, int_>())
+		;
 }
