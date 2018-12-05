@@ -105,6 +105,10 @@ RSA::RSA(mpz_class e, mpz_class d, mpz_class K)
 	this->K = K;
 }	
 
+RSA::RSA(pb::int_ e, pb::int_ d, pb::int_ K)
+	: RSA(mpz_class{pb::str(e)}, mpz_class{pb::str(d)}, mpz_class{pb::str(K)})
+{ }
+
 mpz_class RSA::encode(mpz_class m)
 {//K should be bigger than m
 	return powm(m, e, K);
@@ -117,4 +121,11 @@ mpz_class RSA::sign(mpz_class m)
 {
 	return decode(m);
 }
-
+pb::int_ RSA::encode(pb::int_ m)
+{
+	return encode(mpz_class{pb::str(m)}).get_str();
+}
+pb::int_ RSA::decode(pb::int_ m)
+{
+	return decode(mpz_class{pb::str(m)}).get_str();
+}

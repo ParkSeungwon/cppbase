@@ -61,5 +61,8 @@ PYBIND11_MODULE(tls_crypt, m) {
 	class_<RSA>(m, "RSA")
 		.def(init<int>(), "key_size"_a = 1024)
 		.def(init<int_, int_, int_>())
+		.def("encode", &RSA::encode)
+		.def("decode", &RSA::decode)
+		.def("sign", &RSA::decode)
 		;
 }

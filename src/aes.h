@@ -70,6 +70,7 @@ public:
 	RSA(mpz_class e, mpz_class d, mpz_class K);//read frem certificate or memory
 	RSA(pybind11::int_ e, pybind11::int_ d, pybind11::int_ K);
 	mpz_class sign(mpz_class m), decode(mpz_class m), encode(mpz_class m);
+	pybind11::int_ encode(pybind11::int_ m), decode(pybind11::int_ m);
 	mpz_class K, e;
 protected:
 	mpz_class p, q, d, phi;
