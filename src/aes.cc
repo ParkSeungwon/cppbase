@@ -48,6 +48,17 @@ vector<unsigned char> AES::decrypt2(vector<unsigned char> enc)
 	return decrypt(enc.begin(), enc.end());
 }
 
+Mpz::Mpz(pb::int_ i) : mpz_class{pb::str(i)}
+{ }
+
+Mpz::Mpz(const mpz_class &i) : mpz_class{i}
+{ }
+
+Mpz::operator pybind11::int_()
+{
+	return pb::str(get_str());
+}
+
 DiffieHellman::DiffieHellman(int bit_sz)
 {//server side
 	if(bit_sz == 2048) {
@@ -57,7 +68,8 @@ DiffieHellman::DiffieHellman(int bit_sz)
 	xa = random_prime(bit_sz / 8);
 	ya = powm(g, xa, p);
 }
-DiffieHellman::DiffieHellman(mpz_class p, mpz_class g, mpz_class ya)
+
+DiffieHellman::DiffieHellman(Mpz p, Mpz g, Mpz ya)
 {//client side
 	this->p = p; this->g = g; this->ya = ya;
 	if(mpz_sizeinbase(p.get_mpz_t(), 16) <= 256) xb = random_prime(128);
@@ -65,9 +77,6 @@ DiffieHellman::DiffieHellman(mpz_class p, mpz_class g, mpz_class ya)
 	yb = powm(g, xb, p);
 	K = powm(ya, xb, p);
 }
-DiffieHellman::DiffieHellman(pb::int_ p, pb::int_ g, pb::int_ ya) :
-	DiffieHellman(mpz_class{pb::str(p)}, mpz_class{pb::str(g)}, mpz_class{pb::str(ya)})
-{ }
 
 pb::int_ DiffieHellman::get_p() { return pb::str(p.get_str()); }
 pb::int_ DiffieHellman::get_g() { return pb::str(g.get_str()); }
@@ -75,17 +84,11 @@ pb::int_ DiffieHellman::get_K() { return pb::str(K.get_str()); }
 pb::int_ DiffieHellman::get_ya() { return pb::str(ya.get_str()); }
 pb::int_ DiffieHellman::get_yb() { return pb::str(yb.get_str()); }
 
-mpz_class DiffieHellman::set_yb(mpz_class pub_key)
+pb::int_ DiffieHellman::set_yb(pb::int_ pub_key)
 {//set client pub key
-	yb = pub_key;
+	yb = Mpz{pub_key};
 	K = powm(yb, xa, p);
-	return K;
-}
-
-pb::int_ DiffieHellman::set_yb2(pb::int_ pub_key)
-{
-	set_yb(mpz_class{pb::str(pub_key)});
-	return get_yb();
+	return Mpz{K};
 }
 
 RSA::RSA(int key_size)
@@ -98,23 +101,19 @@ RSA::RSA(int key_size)
 	mpz_invert(d.get_mpz_t(), e.get_mpz_t(), phi.get_mpz_t());//modular inverse
 }
 
-RSA::RSA(mpz_class e, mpz_class d, mpz_class K)
+RSA::RSA(Mpz e, Mpz d, Mpz K)
 {
 	this->e = e;
 	this->d = d;
 	this->K = K;
 }	
 
-mpz_class RSA::encode(mpz_class m)
+pb::int_ RSA::encode(pb::int_ m)
 {//K should be bigger than m
-	return powm(m, e, K);
+	return Mpz{powm(Mpz{m}, e, K)};
 }
-mpz_class RSA::decode(mpz_class m)
+pb::int_ RSA::decode(pb::int_ m)
 {
-	return powm(m, d, K);
-}
-mpz_class RSA::sign(mpz_class m)
-{
-	return decode(m);
+	return Mpz{powm(Mpz{m}, d, K)};
 }
 

@@ -49,9 +49,8 @@ PYBIND11_MODULE(tls_crypt, m) {
 		;
 	class_<DiffieHellman>(m, "DiffieHellman")
 		.def(init<int>(), "bit"_a = 1024)
-		//.def(init<mpz_class, mpz_class, mpz_class>())
 		.def(init<int_, int_, int_>())
-		.def("set_yb", &DiffieHellman::set_yb2)
+		.def("set_yb", &DiffieHellman::set_yb)
 		.def_property_readonly("K", &DiffieHellman::get_K)
 		.def_property_readonly("p", &DiffieHellman::get_p)
 		.def_property_readonly("g", &DiffieHellman::get_g)
@@ -61,5 +60,8 @@ PYBIND11_MODULE(tls_crypt, m) {
 	class_<RSA>(m, "RSA")
 		.def(init<int>(), "key_size"_a = 1024)
 		.def(init<int_, int_, int_>())
+		.def("encode", &RSA::encode)
+		.def("decode", &RSA::decode)
+		.def("sign", &RSA::decode)
 		;
 }
