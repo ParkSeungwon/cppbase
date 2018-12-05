@@ -1,7 +1,5 @@
 #include<string>
 #include<vector>
-#include<boost/python.hpp>
-using namespace boost::python;
 using namespace std;
 
 static char b2c(unsigned char n)
@@ -49,29 +47,5 @@ vector<unsigned char> base64_decode(string s)
 	}
 	for(int i=0; i<padding; i++) v.pop_back();
 	return v;
-}
-
-vector<unsigned char> l2v(list l)
-{
-	vector<unsigned char> v;
-	for(int i=0; i<len(l); i++) v.push_back(extract<unsigned char>(l[i]));
-	return v;
-}
-
-string base64_enc(boost::python::list l)
-{
-	return base64_encode(l2v(l));
-}
-
-boost::python::list v2l(vector<unsigned char> v)
-{
-	boost::python::list l;
-	for(auto c : v) l.append(c);
-	return l;
-}
-
-boost::python::list base64_dec(string s)
-{
-	return v2l(base64_decode(s));
 }
 

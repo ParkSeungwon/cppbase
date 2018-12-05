@@ -1,12 +1,10 @@
 #pragma once
 #include<valarray>
+#include<iostream>
 #include<wolfssl/wolfcrypt/sha.h>
 #include<wolfssl/wolfcrypt/sha256.h>
 #define WOLFSSL_SHA512
 #include<wolfssl/wolfcrypt/sha512.h>
-#include<boost/python.hpp>
-
-std::vector<unsigned char> l2v(boost::python::list l);
 
 class SHA1
 {
@@ -23,12 +21,8 @@ public:
 		wc_ShaFinal(&sha_, r.data());
 		return r;
 	}
-	boost::python::list hash2(boost::python::list l) {
-		auto v = l2v(l);
-		auto a = hash(v.cbegin(), v.cend());
-		boost::python::list r;
-		for(unsigned char c : a) r.append(c);
-		return r;
+	auto hash2(std::vector<unsigned char> v) {
+		return hash(v.cbegin(), v.cend());
 	}
 protected:
 	Sha sha_;
@@ -49,12 +43,8 @@ public:
 		wc_Sha256Final(&sha_, r.data());
 		return r;
 	}
-	boost::python::list hash2(boost::python::list l) {
-		auto v = l2v(l);
-		auto a = hash(v.cbegin(), v.cend());
-		boost::python::list r;
-		for(unsigned char c : a) r.append(c);
-		return r;
+	auto hash2(std::vector<unsigned char> v) {
+		return hash(v.cbegin(), v.cend());
 	}
 protected:
 	Sha256 sha_;
@@ -75,12 +65,8 @@ public:
 		wc_Sha512Final(&sha_, r.data());
 		return r;
 	}
-	boost::python::list hash2(boost::python::list l) {
-		auto v = l2v(l);
-		auto a = hash(v.cbegin(), v.cend());
-		boost::python::list r;
-		for(unsigned char c : a) r.append(c);
-		return r;
+	auto hash2(std::vector<unsigned char> v) {
+		return hash(v.cbegin(), v.cend());
 	}
 protected:
 	Sha512 sha_;
@@ -116,16 +102,11 @@ public:
 		v.insert(v.end(), h.begin(), h.end());
 		return sha_.hash(v.begin(), v.end());
 	}
-	void key2(boost::python::list l) {
-		auto v = l2v(l);
+	void key2(std::vector<unsigned char> v) {
 		key(v.cbegin(), v.cend());
 	}
-	boost::python::list hash2(boost::python::list l) {
-		auto v = l2v(l);
-		auto a = hash(v.cbegin(), v.cend());
-		boost::python::list r;
-		for(auto b : a) r.append(b);
-		return r;
+	auto hash2(std::vector<unsigned char> v) {
+		return hash(v.cbegin(), v.cend());
 	}
 protected:
 	H sha_;
@@ -140,8 +121,7 @@ public:
 		for(It it = begin; it != end; it++) secret_.push_back(*it);
 		hmac_.key(secret_.begin(), secret_.end());
 	}
-	void secret2(boost::python::list l) {
-		auto v = l2v(l);
+	void secret2(std::vector<unsigned char> v) {
 		secret(v.cbegin(), v.cend());
 	}
 	void label(const char* p) {
@@ -156,8 +136,7 @@ public:
 		seed_.clear();
 		for(It it = begin; it != end; it++) seed_.push_back(*it);
 	}
-	void seed2(boost::python::list l) {
-		auto v = l2v(l);
+	void seed2(std::vector<unsigned char> v) {
 		seed(v.cbegin(), v.cend());
 	}
 	std::vector<unsigned char> get_n_byte(int n) {

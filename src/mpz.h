@@ -15,3 +15,6 @@ template<typename It> mpz_class bnd2mpz(It begin, It end)
 	return mpz_class{ss.str()};
 }
 
+mpz_class nextprime(mpz_class n);
+mpz_class random_prime(unsigned byte);
+mpz_class powm(mpz_class base, mpz_class exp, mpz_class mod);

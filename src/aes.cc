@@ -1,33 +1,9 @@
+#include<iostream>
 #include<deque>
+#include<pybind11/stl.h>
 #include"aes.h"
 using namespace std;
-namespace bp = boost::python;
-
-bp::long_ mpz2long(mpz_class l)
-{
-	bp::long_ r; 
-	deque<unsigned> q;
-	const unsigned i = 1 << 31;
-	for(; l; l /= i) q.push_front(mpz_class{l % i}.get_ui());
-	for(unsigned k : q) {
-		r *= i;
-		r += k;
-	}
-	return r;
-}
-
-mpz_class long2mpz(bp::long_ l) 
-{
-	mpz_class r = 0;
-	deque<unsigned> q;
-	const unsigned i = 1 << 31;
-	for(; l; l /= i) q.push_front(bp::extract<unsigned>(l % i));
-	for(unsigned k : q) {
-		r *= i;
-		r += k;
-	}
-	return r;
-}
+namespace pb = pybind11;
 
 AES::AES(unsigned short key_size) : key_size_{key_size / 8}
 { }
@@ -37,9 +13,9 @@ void AES::key(const mpz_class key)
 	mpz2bnd(key, key_, key_+ key_size_);
 }
 
-void AES::key2(bp::long_ k)
+void AES::key2(pb::int_ k)
 {
-	key(long2mpz(k));
+	key(mpz_class{pb::str(k)});
 }
 
 void AES::iv(const mpz_class iv)
@@ -47,9 +23,9 @@ void AES::iv(const mpz_class iv)
 	mpz2bnd(iv, iv_, iv_+16);
 }
 
-void AES::iv2(bp::long_ i)
+void AES::iv2(pb::int_ i)
 {
-	iv(long2mpz(i));
+	iv(mpz_class{pb::str(i)});
 }
 
 string AES::show()
@@ -62,18 +38,14 @@ string AES::show()
 	return ss.str();
 }
 
-vector<unsigned char> l2v(bp::list l);
-bp::list v2l(vector<unsigned char> v);
-bp::list AES::encrypt2(bp::list msg)
+vector<unsigned char> AES::encrypt2(vector<unsigned char> msg)
 {
-	auto v = l2v(msg);
-	return v2l(encrypt(v.begin(), v.end()));
+	return encrypt(msg.begin(), msg.end());
 }
 
-bp::list AES::decrypt2(bp::list enc)
+vector<unsigned char> AES::decrypt2(vector<unsigned char> enc)
 {
-	auto v = l2v(enc);
-	return v2l(decrypt(v.begin(), v.end()));
+	return decrypt(enc.begin(), enc.end());
 }
 
 DiffieHellman::DiffieHellman(int bit_sz)

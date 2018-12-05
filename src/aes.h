@@ -2,22 +2,19 @@
 #include<gmpxx.h>
 #include<cassert>
 #include<wolfssl/wolfcrypt/aes.h>
-#include<boost/python.hpp>
+#include<pybind11/pybind11.h>
 #include"mpz.h"
-
-boost::python::long_ mpz2long(mpz_class z);
-mpz_class long2mpz(boost::python::long_ l);
 
 class AES
 {
 public:
 	AES(unsigned short bit = 128);
-	void key2(boost::python::long_ key);
-	void iv2(boost::python::long_ iv);
+	void key2(pybind11::int_ key);
+	void iv2(pybind11::int_ iv);
 	void key(const mpz_class key);
 	void iv(const mpz_class iv);
-	boost::python::list encrypt2(boost::python::list msg);
-	boost::python::list decrypt2(boost::python::list enc);
+	std::vector<unsigned char> encrypt2(std::vector<unsigned char> msg);
+	std::vector<unsigned char> decrypt2(std::vector<unsigned char> enc);
 	std::string show();
 	template<typename It>
 	std::vector<unsigned char> encrypt(const It begin, const It end) {
