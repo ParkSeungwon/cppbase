@@ -2,7 +2,7 @@ CC = g++
 OBJ = $(wildcard *.o)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
 TST = $(wildcard %.tst.o)
-LIBS = 
+LIBS = -lnettle
 
 all : $(EXE) ../catch.x
 
