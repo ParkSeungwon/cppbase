@@ -2,14 +2,6 @@
 #include"aes.h"
 using namespace std;
 
-void AES::print_key()
-{
-	for(const auto &a : W) {
-		for(const auto& b : a) cout << hex << +b << ',';
-		cout << endl;
-	}
-}
-
 int main()
 {
 	AES aes;
@@ -18,7 +10,13 @@ int main()
 				  key2[16] = {};
 	aes.set_key(key);
 	aes.print_key();
-	aes.set_key(key2);
-	aes.print_key();
+	unsigned char msg[16] = {0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20,
+							 0x4E, 0x69, 0x6E, 0x65, 0x20, 0x54, 0x77, 0x6F};
+	aes.encrypt(msg);
+	cout << "encrypted : " << endl;
+	for(auto c : msg) cout << hex << +c << ',';
+	aes.decrypt(msg);
+	cout << "decrypt : " << endl;
+	for(auto c : msg) cout << hex << +c << ',';
 }
 

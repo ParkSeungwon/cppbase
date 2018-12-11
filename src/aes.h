@@ -6,26 +6,25 @@ const int R = 11;//round
 class AES
 {
 public:
-	void set_key(unsigned char *key) {
-		memcpy(W[0], key, 16);
-		unsigned char *p = &W[1][0];
-		for(int i=1; i<R; i++) {
-			for(int j=0; j<3; j++) *(p+j) = *(p+j-3);
-			*(p+3) = *(p-4);
-			for(int j=0; j<4; j++) *(p+j) = sbox[*(p+j) / 0x100][*(p+j) % 0x100];
-			for(int j=0; j<4; j++, p++) {//p+=4
-				*p ^= rcon[4*i/N-1][j];
-				*p ^= *(p - 4*N);
-			}
-			for(int j=0; j<12; j++, p++) *p = *(p - 4*N) ^ *(p - 4);//p+=12
-		}
-	}
+	void set_key(unsigned char *key);
 	void print_key();
+	void encrypt(unsigned char *m);
+	void decrypt(unsigned char *m);
+	void set_iv(unsigned char *iv);
 
 protected:
 	unsigned char W[R][N*4];
+	unsigned char iv_[16];
 
 private:
+	void shift_row(unsigned char *msg);
+	void inv_shift_row(unsigned char *msg);
+	void substitute(unsigned char *msg);
+	void inv_substitute(unsigned char *msg);
+	void mix_column(unsigned char *msg);
+	void inv_mix_column(unsigned char *msg);
+	void add_round_key(unsigned char *msg, int round);
+	unsigned char doub(unsigned char c);
 	static constexpr unsigned char rcon[10][4] = {{1,}, {2,}, {4,}, {8,},
 		{0x10,}, {0x20,}, {0x40,}, {0x80,}, {0x1b,}, {0x36,}};
 	static constexpr unsigned char sbox[16][16] = {
