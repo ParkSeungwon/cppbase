@@ -1,30 +1,33 @@
 #pragma once
 #include<cstring>
+#include<cassert>
 
-const int N = 4;//key size in words
-const int R = 11;//round
 class AES
-{
+{//128bit. no padding consider. cbc mode.
 public:
-	void set_key(unsigned char *key);
+	void key(const unsigned char *key);
 	void print_key();
-	void encrypt(unsigned char *m);
-	void decrypt(unsigned char *m);
-	void set_iv(unsigned char *iv);
+	void iv(const unsigned char *key);
+	void encrypt(unsigned char *m) const;
+	void decrypt(unsigned char *m) const;
+	void encrypt(unsigned char *p, int sz) const;
+	void decrypt(unsigned char *p, int sz) const;
 
 protected:
-	unsigned char W[R][N*4];
+	static const int N = 4;//key size in words
+	static const int ROUND = 11;//round
+	unsigned char schedule_[ROUND][N*4];
 	unsigned char iv_[16];
 
 private:
-	void shift_row(unsigned char *msg);
-	void inv_shift_row(unsigned char *msg);
-	void substitute(unsigned char *msg);
-	void inv_substitute(unsigned char *msg);
-	void mix_column(unsigned char *msg);
-	void inv_mix_column(unsigned char *msg);
-	void add_round_key(unsigned char *msg, int round);
-	unsigned char doub(unsigned char c);
+	void shift_row(unsigned char *msg) const;
+	void inv_shift_row(unsigned char *msg) const;
+	void substitute(unsigned char *msg) const;
+	void inv_substitute(unsigned char *msg) const;
+	void mix_column(unsigned char *msg) const;
+	void inv_mix_column(unsigned char *msg) const;
+	void add_round_key(unsigned char *msg, int round) const;
+	unsigned char doub(unsigned char c) const;
 	static constexpr unsigned char rcon[10][4] = {{1,}, {2,}, {4,}, {8,},
 		{0x10,}, {0x20,}, {0x40,}, {0x80,}, {0x1b,}, {0x36,}};
 	static constexpr unsigned char sbox[16][16] = {

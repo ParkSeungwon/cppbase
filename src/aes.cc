@@ -2,10 +2,10 @@
 #include"aes.h"
 using namespace std;
 
-void AES::set_key(unsigned char *key) {
-	memcpy(W[0], key, 16);
-	unsigned char *p = &W[1][0];
-	for(int i=1; i<R; i++) {
+void AES::key(const unsigned char *pkey) {
+	memcpy(schedule_[0], pkey, 16);
+	unsigned char *p = &schedule_[1][0];
+	for(int i=1; i<ROUND; i++) {
 		for(int j=0; j<3; j++) *(p+j) = *(p+j-3);
 		*(p+3) = *(p-4);
 		for(int j=0; j<4; j++) *(p+j) = sbox[*(p+j) / 0x100][*(p+j) % 0x100];
@@ -19,50 +19,78 @@ void AES::set_key(unsigned char *key) {
 
 void AES::print_key()
 {
-	for(const auto& a : W) {
+	for(const auto& a : schedule_) {
 		for(const auto& b : a) cout << hex << + b << ',';
 		cout << endl;
 	}
 }
 
-void AES::set_iv(unsigned char *p)
+void AES::iv(const unsigned char *p)
 {
-	memcpy(iv_, p, 16);
+	for(int i=0; i<16; i++) iv_[i] = p[i];
 }
 
-void AES::encrypt(unsigned char *m)
+void AES::encrypt(unsigned char *m) const
 {
-	for(int i=0; i<16; i++)  m[i] ^= W[0][i];
-	for(int round=1; round<11; round++) {
+	add_round_key(m, 0);
+	for(int round=1; round<ROUND-1; round++) {
 		substitute(m);
 		shift_row(m);
-		if(round != 10) mix_column(m);
+		mix_column(m);
 		add_round_key(m, round);
+	}
+	substitute(m);
+	shift_row(m);
+	add_round_key(m, ROUND-1);
+}
+
+void AES::encrypt(unsigned char *p, int sz) const
+{
+	assert(sz % 16 == 0);
+	for(int i=0; i<16; i++) p[i] ^= iv_[i];
+	for(int j=1; j<sz/16; j++) {
+		encrypt(p);
+		for(int i=0; i<16; i++, p++) *(p + 16) ^= *p;//p+=16
+	}
+	encrypt(p);
+}
+
+void AES::decrypt(unsigned char *p, int sz) const
+{
+	assert(sz % 16 == 0);
+	decrypt(p);
+	for(int i=0; i<16; i++, p++) *p ^= iv_[i];//p+=16
+	for(int j=1; j<sz/16; j++) {
+		decrypt(p);
+		for(int i=0; i<16; i++, p++) *p ^= *(p-16);//p+=16
 	}
 }
 
-void AES::decrypt(unsigned char *p)
+void AES::decrypt(unsigned char *p) const
 {
-	add_round_key(p, R-1);
-	for(int round=R-2; round>=0; round--) {
+	add_round_key(p, ROUND-1);
+	for(int round=ROUND-2; round>0; round--) {
 		inv_shift_row(p);
 		inv_substitute(p);
 		add_round_key(p, round);
-		if(round) inv_mix_column(p);
+		inv_mix_column(p);
 	}
+	inv_shift_row(p);
+	inv_substitute(p);
+	add_round_key(p, 0);
 }
 
-void AES::substitute(unsigned char *p)
+void AES::substitute(unsigned char *p) const
 {
 	for(int i=0; i<16; i++) p[i] = sbox[p[i] / 0x100][p[i] % 0x100];
 }
 
-void AES::inv_substitute(unsigned char *p)
+void AES::inv_substitute(unsigned char *p) const
 {
 	for(int i=0; i<16; i++) p[i] = inv_sbox[p[i] / 0x100][p[i] % 0x100];
 }
 
-void AES::shift_row(unsigned char *p)
+void AES::shift_row(unsigned char *p) const
 {
 	unsigned char tmp, tmp2;
 	tmp = p[1]; p[1] = p[5]; p[5] = p[9]; p[9] = p[13]; p[13] = tmp;
@@ -70,7 +98,7 @@ void AES::shift_row(unsigned char *p)
 	tmp = p[3]; p[3] = p[15]; p[15] = p[11]; p[11] = p[7]; p[7] = tmp;
 }
 
-void AES::inv_shift_row(unsigned char *p)
+void AES::inv_shift_row(unsigned char *p) const
 {
 	unsigned char tmp, tmp2;
 	tmp = p[13]; p[13] = p[9]; p[9] = p[5]; p[5] = p[1]; p[1] = tmp;
@@ -78,7 +106,7 @@ void AES::inv_shift_row(unsigned char *p)
 	tmp = p[7]; p[7] = p[11]; p[11] = p[15]; p[15] = p[3]; p[3] = tmp;
 }
 
-void AES::mix_column(unsigned char *p)
+void AES::mix_column(unsigned char *p) const
 {
 	static const unsigned char mix[4][4] 
 		= {{2,3,1,1}, {1,2,3,1}, {1,1,2,3}, {3,1,1,2}};
@@ -98,7 +126,7 @@ void AES::mix_column(unsigned char *p)
 	memcpy(p, result, 16);
 }
 
-void AES::inv_mix_column(unsigned char *p)
+void AES::inv_mix_column(unsigned char *p) const
 {
 	static const unsigned char mix[4][4] = {
 		{14, 11, 13, 9}, {9, 14, 11, 13}, {13, 9, 14, 11}, {11, 13, 9, 14}};
@@ -118,7 +146,7 @@ void AES::inv_mix_column(unsigned char *p)
 	memcpy(p, result, 16);
 }
 
-unsigned char AES::doub(unsigned char c)
+unsigned char AES::doub(unsigned char c) const
 {
 	bool left_most_bit = c & 1 << 7;
 	c <<= 1;
@@ -126,7 +154,7 @@ unsigned char AES::doub(unsigned char c)
 	return c;
 }
 
-void AES::add_round_key(unsigned char *p, int k)
+void AES::add_round_key(unsigned char *p, int k) const
 {
-	for(int i=0; i<16; i++) p[i] ^= W[k][i];
+	for(int i=0; i<16; i++) p[i] ^= schedule_[k][i];
 }

@@ -24,6 +24,6 @@ int main()
 	for(int i=0; i<3; i++) 
 		cbc_encrypt(&ctx, (nettle_cipher_func*)aes128_encrypt, AES_BLOCK_SIZE, iv, 16,
 				dst+16*i, src+16*i);
-	for(uint8_t c : dst) cout << +c << ',';
+	for(uint8_t c : dst) cout << hex << +c << ',';
 	cout << endl << "block size" << AES_BLOCK_SIZE << endl;
 }
