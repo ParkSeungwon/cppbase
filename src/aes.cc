@@ -58,12 +58,11 @@ void AES::encrypt(unsigned char *p, int sz) const
 void AES::decrypt(unsigned char *p, int sz) const
 {
 	assert(sz % 16 == 0);
-	decrypt(p);
+	unsigned char buf[sz];
+	memcpy(buf, p, sz);
+	for(int i=0; i<sz; i+=16) decrypt(p+i);
 	for(int i=0; i<16; i++, p++) *p ^= iv_[i];//p+=16
-	for(int j=1; j<sz/16; j++) {
-		decrypt(p);
-		for(int i=0; i<16; i++, p++) *p ^= *(p-16);//p+=16
-	}
+	for(int i=16; i<sz; i+=16) for(int j=0; j<16; j++,p++) *p ^= buf[i+j-16];
 }
 
 void AES::decrypt(unsigned char *p) const
