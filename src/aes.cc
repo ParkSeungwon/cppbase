@@ -8,7 +8,7 @@ void AES::key(const unsigned char *pkey) {
 	for(int i=1; i<ROUND; i++) {
 		for(int j=0; j<3; j++) *(p+j) = *(p+j-3);
 		*(p+3) = *(p-4);
-		for(int j=0; j<4; j++) *(p+j) = sbox[*(p+j) / 0x100][*(p+j) % 0x100];
+		for(int j=0; j<4; j++) *(p+j) = sbox[*(p+j)];
 		for(int j=0; j<4; j++, p++) {//p+=4
 			*p ^= rcon[4*i/N-1][j];
 			*p ^= *(p - 4*N);
@@ -44,27 +44,6 @@ void AES::encrypt(unsigned char *m) const
 	add_round_key(m, ROUND-1);
 }
 
-void AES::encrypt(unsigned char *p, int sz) const
-{
-	assert(sz % 16 == 0);
-	for(int i=0; i<16; i++) p[i] ^= iv_[i];
-	for(int j=1; j<sz/16; j++) {
-		encrypt(p);
-		for(int i=0; i<16; i++, p++) *(p + 16) ^= *p;//p+=16
-	}
-	encrypt(p);
-}
-
-void AES::decrypt(unsigned char *p, int sz) const
-{
-	assert(sz % 16 == 0);
-	unsigned char buf[sz];
-	memcpy(buf, p, sz);
-	for(int i=0; i<sz; i+=16) decrypt(p+i);
-	for(int i=0; i<16; i++, p++) *p ^= iv_[i];//p+=16
-	for(int i=16; i<sz; i+=16) for(int j=0; j<16; j++,p++) *p ^= buf[i+j-16];
-}
-
 void AES::decrypt(unsigned char *p) const
 {
 	add_round_key(p, ROUND-1);
@@ -79,14 +58,35 @@ void AES::decrypt(unsigned char *p) const
 	add_round_key(p, 0);
 }
 
+void AES::encrypt(unsigned char *p, int sz) const
+{//sequencial
+	assert(sz % 16 == 0);
+	for(int i=0; i<16; i++) p[i] ^= iv_[i];
+	for(int j=1; j<sz/16; j++) {
+		encrypt(p);
+		for(int i=0; i<16; i++, p++) *(p + 16) ^= *p;//p+=16
+	}
+	encrypt(p);
+}
+
+void AES::decrypt(unsigned char *p, int sz) const
+{//can be serialized
+	assert(sz % 16 == 0);
+	unsigned char buf[sz];
+	memcpy(buf, p, sz);
+	for(int i=0; i<sz; i+=16) decrypt(p+i);
+	for(int i=0; i<16; i++, p++) *p ^= iv_[i];//p+=16
+	for(int i=16; i<sz; i+=16) for(int j=0; j<16; j++,p++) *p ^= buf[i+j-16];
+}
+
 void AES::substitute(unsigned char *p) const
 {
-	for(int i=0; i<16; i++) p[i] = sbox[p[i] / 0x100][p[i] % 0x100];
+	for(int i=0; i<16; i++) p[i] = sbox[p[i]];
 }
 
 void AES::inv_substitute(unsigned char *p) const
 {
-	for(int i=0; i<16; i++) p[i] = inv_sbox[p[i] / 0x100][p[i] % 0x100];
+	for(int i=0; i<16; i++) p[i] = inv_sbox[p[i]];
 }
 
 void AES::shift_row(unsigned char *p) const
