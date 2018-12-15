@@ -1,5 +1,7 @@
 #include<iostream>
+#include"sha1.h"
 #include"aes.h"
+#include"log.h"
 using namespace std;
 
 int main()
@@ -18,7 +20,7 @@ int main()
 	aes.decrypt(msg);
 	cout << "decrypt : " << endl;
 	for(auto c : msg) cout << hex << +c << ',';
-	char str[] = "Hello this is me. kkkfthis is the test case i am goingt o test";
+	char str[] = "hello this is me. kkkfthis is the test case i am goingt o test";
 	aes.iv(key);
 	const uint8_t src[48] = {0x14, 0x00, 0x00, 0x0c, 0x48, 0x03, 0x7b, 0x71,
 						   0x49, 0x97, 0x92, 0x96, 0x15, 0x15, 0xc4, 0x36,
@@ -30,5 +32,7 @@ int main()
 	cout << "\nencrypting :" << str << endl;
 	aes.decrypt((unsigned char*)str, 48);
 	cout << "\ndecrypting :" << str << endl;
-}
+	SHA1 sha;
+	LOGI << hexprint("sha1 hash null", sha.hash(str, str));
+}//sha1 test vector for "" da39a3ee 5e6b4b0d 3255bfef 95601890 afd80709
 
