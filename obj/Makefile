@@ -1,15 +1,15 @@
 CC = g++
-OBJ = $(wildcard *.o)
+SRC = $(wildcard *.src.o)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
-TST = $(wildcard %.tst.o)
-LIBS = -lnettle
+TST = $(wildcard *.tst.o)
+LIBS = -lnettle -lwolfssl
 
 all : $(EXE) ../catch.x
 
-../%.x : %.x $(OBJ)
+../%.x : %.x $(SRC)
 	$(CC) -o $@ $^ $(LIBS)
 
-../catch.x : catch.tx $(OBJ) $(TST)
+../catch.x : catch.tx $(SRC) $(TST)
 	$(CC) -o $@ $^ $(LIBS)
 
 #    $@ |현재 목표 파일의 이름

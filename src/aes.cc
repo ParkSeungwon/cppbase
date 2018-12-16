@@ -75,8 +75,8 @@ void AES::decrypt(unsigned char *p, int sz) const
 	unsigned char buf[sz];
 	memcpy(buf, p, sz);
 	for(int i=0; i<sz; i+=16) decrypt(p+i);
-	for(int i=0; i<16; i++, p++) *p ^= iv_[i];//p+=16
-	for(int i=16; i<sz; i+=16) for(int j=0; j<16; j++,p++) *p ^= buf[i+j-16];
+	for(int i=0; i<16; i++) *p++ ^= iv_[i];//p+=16
+	for(int i=0; i<sz-16; i++) *p++ ^= buf[i];
 }
 
 void AES::substitute(unsigned char *p) const

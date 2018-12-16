@@ -3,6 +3,7 @@ all :
 	make -C src/
 	make -C tst/
 	make -C obj/
+	./catch.x
 
 PHONY : clean
 
