@@ -1,12 +1,16 @@
+SHELL := /bin/bash
+
 all : 
 	incltouch.x
-	make -C src/
-	make -C tst/
+	for i in `ls -d */`; do \
+		if [ $$i == "obj/" ]; then continue; fi; \
+		if [ -f $${i}/Makefile ]; then make -C $$i; fi;\
+	done
 	make -C obj/
 
-PHONY : clean
-
 clean :
-	rm obj/*.?
+	for i in obj/*.?; do \
+		if [[ $$i != *.tst.x ]]; then rm $$i; fi; \
+	done
 	rm *.x
 

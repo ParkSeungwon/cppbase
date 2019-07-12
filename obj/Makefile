@@ -1,16 +1,14 @@
-CC = g++
+CXX = g++
 OBJ = $(wildcard *.o)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
-TST = $(wildcard %.tst.o)
-LIBS = 
+LDFLAGS = 
+LDLIBS = -lpthread -lmysqlcppconn -ljsoncpp -lhogweed -lnettle -lgmpxx -lgmp -lstdc++fs 
 
-all : $(EXE) ../catch.x
+
+all : $(EXE)
 
 ../%.x : %.x $(OBJ)
-	$(CC) -o $@ $^ $(LIBS)
-
-../catch.x : catch.tx $(OBJ) $(TST)
-	$(CC) -o $@ $^ $(LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 #    $@ |현재 목표 파일의 이름
 #    $* | 확장자를 제외한 현재 목표 파일의 이름
