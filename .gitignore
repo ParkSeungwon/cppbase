@@ -34,7 +34,3 @@ core
 *.out
 *.app
 *.vim
-find
-.
--size
-+3M
