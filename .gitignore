@@ -41,3 +41,4 @@ find
 -size
 ./obj/catch.tx
 obj/catch.tx
+obj/catch.tx
