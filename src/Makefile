@@ -5,7 +5,7 @@ DIR = $(notdir $(shell pwd))
 OBJ = $(patsubst %.cc, ../obj/%.$(DIR).o, $(wildcard *.cc))
 MAIN_OBJ = $(patsubst %.cpp, ../obj/%.$(DIR).x, $(wildcard *.cpp))
 
-all : $(OBJ) $(MAIN_OBJ)
+all : $(OBJ) $(MAIN_OBJ) $(OOBJ)
 
 ../obj/%.$(DIR).o : %.cc 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -o $@

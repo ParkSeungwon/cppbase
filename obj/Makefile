@@ -1,5 +1,7 @@
 CXX = g++
 OBJ = $(wildcard *.o)
+OOBJ = $(wildcard *.O)
+TOBJ = $(wildcard *.t)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
 LDFLAGS = 
 LDLIBS = -lpthread -lmysqlcppconn -ljsoncpp -lhogweed -lnettle -lgmpxx -lgmp -lstdc++fs 
