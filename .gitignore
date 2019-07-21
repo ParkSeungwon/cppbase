@@ -39,3 +39,4 @@ find
 +3M
 .
 -size
+./obj/catch.tx
