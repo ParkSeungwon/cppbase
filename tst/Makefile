@@ -1,14 +1,12 @@
 CXX = g++
 CPPFLAGS = -I../
 CXXFLAGS = -g -c -std=c++17 -fmax-errors=1
-DIR = $(notdir $(shell pwd))
-OBJ = $(patsubst %.cc, ../obj/%.$(DIR).o, $(wildcard *.cc))
-MAIN_OBJ = $(patsubst %.cpp, ../obj/%.$(DIR).x, $(wildcard *.cpp))
+OBJ = $(patsubst %.cc, ../obj/%.t, $(wildcard *.cc))
 
 all : $(OBJ) $(MAIN_OBJ)
 
-../obj/%.$(DIR).o : %.cc 
+../obj/%.t : %.cc 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -o $@
 
-../obj/%.$(DIR).x : %.cpp
+../obj/catch : catch.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -o $@

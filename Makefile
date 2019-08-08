@@ -7,7 +7,7 @@ all :
 		if [ -f $${i}/Makefile ]; then make -C $$i; fi;\
 	done
 	make -C obj/
-	./catch.tst.x
+	./catch
 
 clean :
 	for i in obj/*.?; do \

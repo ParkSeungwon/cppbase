@@ -7,9 +7,12 @@ LDFLAGS =
 LDLIBS = -lpthread -lmysqlcppconn -ljsoncpp -lhogweed -lnettle -lgmpxx -lgmp -lstdc++fs 
 
 
-all : $(EXE)
+all : $(EXE) ../catch
 
 ../%.x : %.x $(OBJ)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+../catch : catch $(OBJ) $(TOBJ)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 #    $@ |현재 목표 파일의 이름
