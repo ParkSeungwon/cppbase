@@ -1,6 +1,5 @@
 CXX = g++
 OBJ = $(wildcard *.o)
-OOBJ = $(wildcard *.O)
 TOBJ = $(wildcard *.t)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
 LDFLAGS = 
