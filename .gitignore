@@ -34,4 +34,4 @@ core
 *.out
 *.app
 *.vim
-obj/catch.tx
+obj/catch
