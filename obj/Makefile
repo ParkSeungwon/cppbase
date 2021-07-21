@@ -1,9 +1,9 @@
-CXX = g++
+CXX = g++-10
 OBJ = $(wildcard *.o)
 TOBJ = $(wildcard *.t)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
 LDFLAGS = 
-LDLIBS = -lpthread -lmysqlcppconn -ljsoncpp -lhogweed -lnettle -lgmpxx -lgmp -lstdc++fs 
+LDLIBS = -lpthread
 
 
 all : $(EXE) ../catch
