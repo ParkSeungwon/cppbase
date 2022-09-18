@@ -1,6 +1,6 @@
-CXX = g++-10
+CXX = g++
 CPPFLAGS = -I../
-CXXFLAGS = -g -c -std=c++2a -fmax-errors=1
+CXXFLAGS = -g -c -std=c++20 -fmax-errors=1
 DIR = $(notdir $(shell pwd))
 OBJ = $(patsubst %.cc, ../obj/%.$(DIR).o, $(wildcard *.cc))
 MAIN_OBJ = $(patsubst %.cpp, ../obj/%.$(DIR).x, $(wildcard *.cpp))
