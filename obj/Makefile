@@ -1,9 +1,10 @@
 CXX = g++
+PKGS = 
 OBJ = $(wildcard *.o)
 TOBJ = $(wildcard *.t)
 EXE = $(patsubst %.x, ../%.x, $(wildcard *.x))
-LDFLAGS = 
-LDLIBS = -lpthread
+LDFLAGS = $(shell pkg-config --libs $(PKGS))
+LDLIBS = 
 
 
 all : $(EXE) ../catch
