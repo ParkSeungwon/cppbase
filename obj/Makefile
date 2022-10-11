@@ -10,10 +10,10 @@ LDLIBS =
 all : $(EXE) ../catch
 
 ../%.x : %.x $(OBJ)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(CXX) -o $@ $^ $(LDLIBS)
 
-../catch : catch $(OBJ) $(TOBJ)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+../catch : catch $(OBJ) $(TOBJ) $(LDFLAGS) 
+	$(CXX) -o $@ $^ $(LDLIBS) $(LDFLAGS) 
 
 #    $@ |현재 목표 파일의 이름
 #    $* | 확장자를 제외한 현재 목표 파일의 이름
