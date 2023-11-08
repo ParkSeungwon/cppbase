@@ -10,7 +10,7 @@ LDLIBS =
 all : $(EXE) ../catch
 
 ../%.x : %.x $(OBJ)
-	$(CXX) -o $@ $^ $(LDLIBS)
+	$(CXX) -o $@ $^ $(LDLIBS) $(LDFLAGS)
 
 ../catch : catch $(OBJ) $(TOBJ) $(LDFLAGS) 
 	$(CXX) -o $@ $^ $(LDLIBS) $(LDFLAGS) 
