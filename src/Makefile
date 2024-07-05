@@ -5,7 +5,7 @@ CXXFLAGS = -g -c -std=c++23 -fmax-errors=1 $(shell pkg-config --cflags $(PKGS))
 DIR = $(notdir $(shell pwd))
 OBJ = $(patsubst %.cc, ../obj/%.$(DIR).o, $(wildcard *.cc))
 MAIN_OBJ = $(patsubst %.cpp, ../obj/%.$(DIR).x, $(wildcard *.cpp))
-DEPS = $(OBJ:.o =.d) $(MAIN_OBJ:.o =.d)
+DEPS = $(OBJ:.o =.d) $(MAIN_OBJ:.x =.d)
 
 all : $(OBJ) $(MAIN_OBJ) $(OOBJ)
 
